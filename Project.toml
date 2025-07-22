@@ -1,0 +1,14 @@
+name = "SecondHarmonicGeneration"
+uuid = "408f0694-e131-405b-904f-41a1b45d1074"
+authors = ["RainerHeintzmann <heintzmann@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Tullio = "bc48ee85-29a4-5162-ae0b-a64e1601d4bc"
+
+[compat]
+LinearAlgebra = "1.11.0"
+Random = "1.11.0"
+Tullio = "0.3.8"
