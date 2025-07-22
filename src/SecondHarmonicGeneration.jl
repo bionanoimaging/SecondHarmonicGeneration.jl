@@ -7,7 +7,6 @@ using Tullio
 using LinearAlgebra
 
 """
-Gemini:
 For a material with χ²_{∞v} symmetry, if we align the z-axis with the fiber axis (the axis of the triple helix/fibril),
 the non-zero independent elements of the χ^{(2)} tensor are:
  * χ²_{zzz}
@@ -57,6 +56,7 @@ function get_chi2_tensor(orientation_dim=1)
     χ²[x, x, z] = off_axis_value 
     χ²[y, y, z] = off_axis_value 
 
+    # These should not be set, but are here for completeness:
     # χ²[x, z, z] = off_axis_value 
     # χ²[y, z, z] = off_axis_value
     # χ²[z, x, z] = off_axis_value 
@@ -71,8 +71,12 @@ end
 """
     get_chi2_stoller(orientation_dim=1, gamma=-0.7, a=0.07, b = gamma*a, c=2*b)
 
-Get the χ² tensor according equation (2) of Stoller et al. (2002) for collagen type 1.
 
+Get the χ² tensor according equation (2) of 
+P. Stoller, K.M. Reiser, P.M. Celliers, and A.M. Rubenchik* “Polarization-Modulated Second Harmonic Generation in Collagen”,
+Biophys. J. 82, 3330–3342 (2002).
+
+In summary:
 gamma = -0.7 = b/a
 b = gamma * a
 b = c/2
@@ -95,6 +99,26 @@ function get_chi2_stoller(orientation_dim=1, gamma=-0.7, a=0.07, b = gamma*a, c=
     return χ²
 end
 
+"""
+    get_EP(chi2, α=0, β=0, circular_polarization=false, axis_ratio=1.0)
+
+Get the illumination electric field vector E and polarization P for a given χ² tensor `chi2`, angle `α`, angle `β`,
+and optional `circular polarization` and `axis ratio` for ellipticity.
+The angles `α` and `β` are the angles of the electric field vector in the x-y plane and the z-axis, respectively.
+
+If circular polarization is true, the electric field vector is converted to circular polarization.
+The in addition  the `axis_ratio` is used to convert the electric field vector to elliptical polarization.
+
+# Parameters
+- `chi2`: The χ² tensor.
+- `α`: The angle of the electric field vector in the x-y plane (default:
+0).
+- `β`: The angle of the electric field vector in the z-axis (default:
+0).
+- `circular_polarization`: If true, the electric field vector is converted to circular
+polarization (default: false).
+- `axis_ratio`: The axis ratio for circular polarization (default: 1.0).
+"""
 function get_EP(chi2, α=0, β=0, circular_polarization=false, axis_ratio=1.0)
     E = [cos(α)*cos(β), sin(α)*cos(β), sin(β)]
     if (circular_polarization)
@@ -106,6 +130,26 @@ function get_EP(chi2, α=0, β=0, circular_polarization=false, axis_ratio=1.0)
     return E,P
 end
 
+"""
+    get_intensity(chi2, α=0, β=0, circular_polarization=false, axis_ratio=1.0, analyzer = true)
+
+Get the intensity of the second harmonic generation for a given χ² tensor `chi2`, angle `α`, angle `β`,
+and optional `circular polarization`, `axis ratio` for ellipticity, and `analyzer` flag.
+The angles `α` and `β` are the angles of the electric field vector in the x-y plane and the z-axis, respectively.
+If `analyzer` is true, the intensity is calculated as the absolute square of the dot product of the polarization vector P and the detector electric field vector E_det.
+If `analyzer` is false, the intensity is calculated as the sum of the absolute squares of the elements of the polarization vector P,
+corresponding to unpolarized detection.
+
+# Parameters
+- `chi2`: The χ² tensor.
+- `α`: The angle of the electric field vector in the x-y plane (default: 0).
+- `β`: The angle of the electric field vector in the z-axis (default: 0).
+- `circular_polarization`: If true, the electric field vector is converted
+    to circular polarization (default: false).
+- `axis_ratio`: The axis ratio for circular polarization (default: 1.0).
+- `analyzer`: If true, the intensity and analyzer identical to the illumination electric field vector is assumed.
+            Otherwise unpolarized detection is assumed. 
+"""
 function get_intensity(chi2, α=0, β=0, circular_polarization=false,  axis_ratio=1.0, analyzer = true)
     E,P = get_EP(chi2, α, β, circular_polarization, axis_ratio)
 
@@ -118,6 +162,22 @@ function get_intensity(chi2, α=0, β=0, circular_polarization=false,  axis_rati
     end
 end
 
+"""
+    get_angle(chi2, α=0, β=0, circular_polarization=false, axis_ratio=1.0)
+
+Get the phase angle of the second harmonic generation for a given χ² tensor `chi2`, angle `α`, angle `β`,
+and optional `circular polarization`, `axis ratio` for ellipticity, and `analyzer` flag.
+The angles `α` and `β` are the angles of the electric field vector in the x-y plane and the z-axis, respectively.
+The phase angle is calculated as the angle of the dot product of the polarization vector P and the detector electric field vector E_det.
+
+# Parameters
+- `chi2`: The χ² tensor.
+- `α`: The angle of the electric field vector in the x-y plane (default: 0).
+- `β`: The angle of the electric field vector in the z-axis (default: 0).
+- `circular_polarization`: If true, the electric field vector is converted
+    to circular polarization (default: false).
+- `axis_ratio`: The axis ratio for circular polarization (default: 1.0).
+"""
 function get_angle(chi2, α=0, β=0, circular_polarization=false,  axis_ratio=1.0)
     E,P = get_EP(chi2, α, β, circular_polarization, axis_ratio)
     # E_det = [cos(α)*cos(β), sin(α)*cos(β), sin(β)]
@@ -141,7 +201,16 @@ end
 """
     stoller_paper(alpha, phi=0, gamma=-0.7)
 
-this uses a different equation (8) from the Stoller paper, but it should be equivalent.
+this uses a different equation (8) from the Stoller paper, but it should be equivalent to the calculation with the Χ² tensor.
+This can be used for consistency checks.
+
+Parameters:
+- `alpha`: angle in radians
+- `phi`: phase angle in radians (default: 0)
+- `gamma`: the ratio b/a, where b = gamma * a, a = d31, c = 2*b (default: -0.7)
+
+Returns:
+- `I`: the intensity of the second harmonic generation with unpolarized detection.
 
 """
 function stoller_paper(alpha, phi=0, gamma=-0.7)
