@@ -9,3 +9,8 @@ The 3rd order tensor is obtained by calling `get_chi2_stoller(adim)`, where `adi
 
 The anglular dependence is obtained by variing the polarization angles of illumination and assuming a corresponding detection.
 This can be done with the function `get_intensity` and `get_angle`.
+
+# Installation
+as long as it is not released, you should install this toolbox via
+`] add https://github.com/bionanoimaging/SecondHarmonicGeneration.jl`
+in the environment of your choice. 
