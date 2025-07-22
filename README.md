@@ -1,3 +1,5 @@
+# Tools to simulate the χ² of collagen 1 and its SHG generation
+
 In the examples folder you find `simulate_collagen.jl` with a few simulations of the SHG intensity and phase of the amplitude under various illumination and polarized detection conditions.
 The coefficients were taken from 
 P. Stoller, K.M. Reiser, P.M. Celliers, and A.M. Rubenchik* “Polarization-Modulated Second Harmonic Generation in Collagen”, Biophys. J. 82, 3330–3342 (2002).
